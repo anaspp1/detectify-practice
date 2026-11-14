@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تدريب اكتشاف الأخطاء — أسئلة إضافية</title>
+<style>
+  :root{
+    --ink:#0f1b2d;
+    --muted:#5b6b82;
+    --accent:#12855c;
+    --accent-dark:#0c6142;
+    --green:#0f9d58;
+    --red:#d92d20;
+    --line:#e2e8f0;
+    --line-strong:#cbd5e1;
+    --card:#ffffff;
+    --soft:#f3f8f6;
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    padding:18px 16px 40px;
+    font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic",Arial,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(900px 600px at 90% -10%, #14654a 0%, transparent 60%),
+      radial-gradient(700px 500px at 0% 110%, #0b3d2e 0%, transparent 55%),
+      #07231b;
+    min-height:100%;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+  .screen.hidden{display:none}
+
+  /* ---------- home ---------- */
+  .brand{display:flex;align-items:center;gap:12px;margin:6px 0 18px;color:#d9f2e7}
+  .brand .logo{
+    width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+    background:linear-gradient(145deg,#22b57e,#0c6142);font-weight:800;color:#fff;font-size:20px;
+    box-shadow:0 8px 20px rgba(3,60,40,.5)
+  }
+  .brand h1{font-size:19px;margin:0;font-weight:700}
+  .brand p{margin:2px 0 0;font-size:13px;color:#9bc9b6}
+
+  .cards{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 14px 34px rgba(2,25,18,.4)}
+  .pill{display:inline-block;font-size:12px;font-weight:700;color:var(--accent);background:#e3f5ec;border-radius:999px;padding:3px 10px}
+  .card h2{margin:10px 0 6px;font-size:22px}
+  .card p{margin:0 0 12px;color:var(--muted);font-size:14.5px;line-height:1.7}
+  .facts{list-style:none;display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0 0 16px}
+  .facts li{font-size:12.5px;color:#334155;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:4px 9px}
+  .best{margin-top:10px;font-size:12.5px;color:var(--muted);min-height:18px}
+
+  .btn{
+    font-family:inherit;font-size:15px;font-weight:700;border-radius:12px;border:1px solid transparent;
+    padding:12px 18px;cursor:pointer;transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(18,133,92,.32)}
+  .btn.primary:hover{background:var(--accent-dark)}
+  .btn.ghost{background:#fff;color:#25364d;border-color:var(--line-strong)}
+  .btn.ghost:hover{background:#f1f5fa}
+  .btn.small{padding:7px 12px;font-size:13px;border-radius:9px}
+
+  .switch{display:flex;align-items:center;gap:9px;color:#c9e8db;font-size:14px;margin:16px 2px 0}
+  .switch input{width:17px;height:17px;accent-color:#22b57e}
+
+  /* ---------- quiz ---------- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .counter{color:#e4f6ee;font-size:14px;font-weight:600}
+  .timer{
+    font-variant-numeric:tabular-nums;font-weight:800;font-size:17px;color:#0f1b2d;background:#e6f6ef;
+    border-radius:10px;padding:6px 12px;min-width:78px;text-align:center
+  }
+  .timer.low{background:#fdeceb;color:var(--red);animation:pulse 1s infinite}
+  #timer.hidden{display:none}
+  @keyframes pulse{50%{opacity:.55}}
+  .progress{height:9px;background:rgba(255,255,255,.16);border-radius:999px;overflow:hidden;margin-bottom:16px}
+  .progress > div{height:100%;width:0;background:linear-gradient(90deg,#5fe0ad,#22b57e);border-radius:999px;transition:width .25s ease}
+
+  .panel{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 14px 34px rgba(2,25,18,.4)}
+  .prompt{font-size:15.5px;color:#2a3a52;margin:0 0 16px;text-align:center;font-weight:700}
+
+  /* ---------- grids ---------- */
+  .board{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  .grid-wrap{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:10px}
+  .grid-label{text-align:center;font-size:12.5px;color:var(--muted);margin-bottom:8px;font-weight:700}
+  .grid{display:grid;gap:7px}
+  .cell{aspect-ratio:1/1;border-radius:12px}
+  .cell svg{width:100%;height:100%;display:block}
+  .cell.hit{box-shadow:0 0 0 3px var(--red)}
+  .cell.hit.good{box-shadow:0 0 0 3px var(--green)}
+
+  /* ---------- number pad ---------- */
+  .numpad{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;max-width:460px;margin:18px auto 0}
+  .key{
+    font-family:inherit;font-size:21px;font-weight:800;padding:13px 0;border-radius:12px;
+    background:var(--soft);border:1px solid var(--line-strong);color:var(--ink);cursor:pointer;
+    transition:background .12s,border-color .12s,transform .06s;
+  }
+  .key:hover{background:#e6f4ee;border-color:var(--accent)}
+  .key:active{transform:translateY(1px)}
+  .key.correct{background:#e7f7ee;border-color:var(--green);color:#0b6b3e}
+  .key.wrong{background:#fdecea;border-color:var(--red);color:var(--red)}
+
+  /* ---------- feedback ---------- */
+  .feedback{margin-top:16px;border-radius:12px;padding:13px 15px;font-size:14.5px;line-height:1.8}
+  .feedback.ok{background:#e7f7ee;border:1px solid #b7e4c9;color:#0b6b3e}
+  .feedback.bad{background:#fdf0ef;border:1px solid #f5c2bd;color:#8d221a}
+  .feedback.hidden{display:none}
+  .feedback b{font-weight:800}
+
+  .quiz-foot{margin-top:16px;display:flex;justify-content:flex-end;gap:10px}
+  .quiz-foot .hidden{display:none}
+
+  /* ---------- result ---------- */
+  .score-card{background:#fff;border-radius:var(--radius);padding:26px;text-align:center;box-shadow:0 14px 34px rgba(2,25,18,.4)}
+  .ring{
+    --p:0;
+    width:150px;height:150px;border-radius:50%;margin:0 auto 16px;
+    background:conic-gradient(var(--accent) calc(var(--p)*1%), #e6f4ee 0);
+    display:grid;place-items:center;position:relative;
+  }
+  .ring::before{content:"";position:absolute;inset:12px;background:#fff;border-radius:50%}
+  .ring .val{position:relative;text-align:center}
+  .ring .val strong{font-size:38px;display:block;line-height:1}
+  .ring .val small{font-size:12.5px;color:var(--muted)}
+  .score-card h2{margin:0 0 6px;font-size:22px}
+  .score-card p{margin:0 auto 18px;max-width:540px;color:var(--muted);line-height:1.75}
+  .result-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+
+  .review-title{color:#d9f2e7;font-size:16px;margin:24px 2px 10px}
+  .review{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+  .review li{background:#fff;border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center}
+  .review .no{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:var(--soft);color:#41546e}
+  .review .q{font-size:13.5px;color:#41546e}
+  .review .q strong{display:block;color:var(--ink);margin-bottom:6px;font-size:14px}
+  .review .mini{display:grid;gap:4px;margin:0}
+  .review .mini .cell{border-radius:6px}
+  .review .mini .cell.hit{box-shadow:0 0 0 2px var(--red)}
+  .review .mark{font-size:12.5px;font-weight:800;white-space:nowrap;padding:4px 9px;border-radius:999px;align-self:start}
+  .review .mark.ok{color:#0b6b3e;background:#e7f7ee}
+  .review .mark.no{color:#8d221a;background:#fdecea}
+  .review .mark.skip{color:#6b5610;background:#fdf5dd}
+
+  .foot-note{color:#8fb9a8;font-size:12px;text-align:center;margin:22px 0 0;line-height:1.8}
+
+  @media (max-width:560px){
+    body{padding:12px 10px 30px}
+    .panel{padding:14px}
+    .board{gap:8px}
+    .grid-wrap{padding:7px}
+    .grid{gap:4px}
+    .numpad{grid-template-columns:repeat(5,1fr);gap:6px}
+    .key{font-size:18px;padding:11px 0}
+    .review li{grid-template-columns:26px 1fr;grid-template-areas:"no q" ". mark"}
+    .review .no{grid-area:no}
+    .review .q{grid-area:q}
+    .review .mark{grid-area:mark;justify-self:start}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ HOME ============ -->
+  <section id="screen-home" class="screen">
+    <div class="brand">
+      <div class="logo">D</div>
+      <div>
+        <h1>تدريب اكتشاف الأخطاء — أسئلة إضافية</h1>
+        <p>قارن الشبكتين، وحدّد عدد الاختلافات، مستوى متوسط</p>
+      </div>
+    </div>
+
+    <div class="cards">
+      <article class="card">
+        <span class="pill">الاختبار</span>
+        <h2>اكتشاف الأخطاء</h2>
+        <p>تظهر لك شبكتان متشابهتان. كل خلية قد تختلف في المحتوى (حرف، رقم، رمز)، أو الشكل، أو اللون. عُدّ الاختلافات ثم اختر الرقم من لوحة الأرقام.</p>
+        <ul class="facts"><li>20 سؤالًا</li><li>5 دقائق</li><li>متوسط</li><li>شبكات متجددة</li></ul>
+        <button class="btn primary" id="start">ابدأ التدريب</button>
+        <div class="best" id="best"></div>
+      </article>
+    </div>
+
+    <label class="switch" for="timer-toggle">
+      <input type="checkbox" id="timer-toggle" checked>
+      تفعيل المؤقت (5 دقائق)
+    </label>
+
+    <p class="foot-note">
+      الشبكات تُبنى عشوائيًا في كل محاولة. بعد الخطأ يظهر تلميح، وبعد ثلاث محاولات تُكشف مواضع الاختلافات لتتعلم منها.
+    </p>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="screen-quiz" class="screen hidden">
+    <div class="topbar">
+      <button class="btn ghost small" id="quit">خروج</button>
+      <div class="counter" id="counter">السؤال 1 من 20</div>
+      <div class="timer" id="timer">05:00</div>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="panel" id="q-area"></div>
+    <div class="feedback hidden" id="feedback"></div>
+    <div class="quiz-foot">
+      <button class="btn primary hidden" id="next">التالي</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section id="screen-result" class="screen hidden">
+    <div class="score-card">
+      <div class="ring" id="ring"><div class="val"><strong id="score-num">0</strong><small>من 20</small></div></div>
+      <h2 id="result-title"></h2>
+      <p id="result-sub"></p>
+      <div class="result-actions">
+        <button class="btn primary" id="again">أعد المحاولة</button>
+        <button class="btn ghost" id="home">الصفحة الرئيسية</button>
+      </div>
+    </div>
+    <h3 class="review-title">مراجعة الأسئلة</h3>
+    <ol class="review" id="review"></ol>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   مولّد الشبكات — شبكات جديدة في كل محاولة
+   ============================================================ */
+
+/* --- BEGIN GENERATORS --- */
+
+const SHAPES = {
+  square:   '<rect x="9" y="9" width="82" height="82" rx="10"/>',
+  circle:   '<circle cx="50" cy="50" r="41"/>',
+  triangle: '<polygon points="50,9 93,89 7,89"/>',
+  hexagon:  '<polygon points="50,6 88,28 88,72 50,94 12,72 12,28"/>',
+  rhombus:  '<polygon points="50,6 94,50 50,94 6,50"/>'
+};
+
+const COLORS = [
+  {key:'اسود',    fill:'#111827', ink:'#ffffff'},
+  {key:'اخضر',    fill:'#15803d', ink:'#ffffff'},
+  {key:'احمر',    fill:'#b91c1c', ink:'#ffffff'},
+  {key:'رمادي',   fill:'#64748b', ink:'#ffffff'},
+  {key:'ازرق',    fill:'#1d4ed8', ink:'#ffffff'},
+  {key:'بنفسجي',  fill:'#c4b5fd', ink:'#1f2937'},
+  {key:'برتقالي', fill:'#d97706', ink:'#ffffff'},
+  {key:'فيروزي',  fill:'#0f766e', ink:'#ffffff'},
+  {key:'وردي',    fill:'#db2777', ink:'#ffffff'},
+  {key:'سماوي',   fill:'#38bdf8', ink:'#082f49'}
+];
+
+const LOWER = 'abcdefghijklmnopqrstuvwxyz';
+const UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const DIGITS = '123456789';
+const SYMBOLS = ['%', '#', '&', '?', '!', '$', '*', '+', '='];
+
+const PER_SECTION = 20;
+
+function rInt(min, max){ return min + Math.floor(Math.random() * (max - min + 1)); }
+function pick(list){ return list[rInt(0, list.length - 1)]; }
+
+function shuffle(list){
+  const a = list.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = rInt(0, i);
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function randCell(){
+  const shape = pick(Object.keys(SHAPES));
+  const color = rInt(0, COLORS.length - 1);
+  const kind = pick(['letter', 'letter', 'digit', 'symbol']);
+
+  let ch;
+  if(kind === 'letter') ch = pick(pick([LOWER, UPPER]).split(''));
+  else if(kind === 'digit') ch = pick(DIGITS.split(''));
+  else ch = pick(SYMBOLS);
+
+  return {shape, color, ch};
+}
+
+/* تغيير سِمة واحدة فقط: المحتوى أو الشكل أو اللون */
+function mutateCell(cell){
+  const kind = pick(['content', 'content', 'shape', 'colour']);
+
+  if(kind === 'shape'){
+    const others = Object.keys(SHAPES).filter(s => s !== cell.shape);
+    return {shape: pick(others), color: cell.color, ch: cell.ch};
+  }
+
+  if(kind === 'colour'){
+    let c = cell.color;
+    while(c === cell.color) c = rInt(0, COLORS.length - 1);
+    return {shape: cell.shape, color: c, ch: cell.ch};
+  }
+
+  const isLetter = /[A-Za-z]/.test(cell.ch);
+
+  if(isLetter){
+    const isUpper = cell.ch === cell.ch.toUpperCase();
+
+    // نصف الحالات: تغيير حالة الحرف فقط (d ← D)
+    if(Math.random() < 0.5){
+      return {shape: cell.shape, color: cell.color, ch: isUpper ? cell.ch.toLowerCase() : cell.ch.toUpperCase()};
+    }
+    // النصف الآخر: حرف آخر بنفس الحالة
+    const pool = (isUpper ? UPPER : LOWER).split('').filter(c => c !== cell.ch);
+    return {shape: cell.shape, color: cell.color, ch: pick(pool)};
+  }
+
+  const pool = /[0-9]/.test(cell.ch) ? DIGITS.split('') : SYMBOLS;
+  const others = pool.filter(c => c !== cell.ch);
+  return {shape: cell.shape, color: cell.color, ch: pick(others)};
+}
+
+function attrDiff(a, b){
+  let n = 0;
+  if(a.shape !== b.shape) n++;
+  if(a.color !== b.color) n++;
+  if(a.ch !== b.ch) n++;
+  return n;
+}
+
+function makeQuestion(count){
+  let cells = 9;
+  if(count >= 5) cells = 12;
+  else if(count >= 3 && Math.random() < 0.25) cells = 12;
+  else if(count <= 2 && Math.random() < 0.2) cells = 16;
+
+  const cols = cells === 9 ? 3 : 4;
+
+  const left = [];
+  for(let i = 0; i < cells; i++) left.push(randCell());
+
+  const right = left.map(c => ({shape: c.shape, color: c.color, ch: c.ch}));
+  const spots = shuffle(Array.from({length: cells}, (_, i) => i)).slice(0, count);
+
+  spots.forEach(i => {
+    let changed = mutateCell(left[i]);
+    let guard = 0;
+    while(attrDiff(left[i], changed) !== 1 && guard++ < 20){
+      changed = mutateCell(left[i]);
+    }
+    right[i] = changed;
+  });
+
+  return {
+    cols,
+    rows: cells / cols,
+    left,
+    right,
+    answer: count,
+    spots: spots.slice().sort((a, b) => a - b)
+  };
+}
+
+function signature(q){
+  return q.left.map(c => c.shape + c.color + c.ch).join(',') + '|' +
+         q.right.map(c => c.shape + c.color + c.ch).join(',');
+}
+
+function buildSet(){
+  // توزيع عدد الاختلافات: من 0 إلى 6 مع تركيز على 2–4
+  const counts = shuffle([0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6]);
+  const out = [];
+  const seen = new Set();
+
+  for(let i = 0; i < PER_SECTION; i++){
+    let q, key;
+
+    for(let tries = 0; tries < 60; tries++){
+      q = makeQuestion(counts[i]);
+      key = signature(q);
+      if(!seen.has(key)) break;
+    }
+    seen.add(key);
+    out.push(q);
+  }
+
+  return out;
+}
+
+/* --- END GENERATORS --- */
+
+/* ============================================================
+   عرض الشبكات
+   ============================================================ */
+
+function esc(s){
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function svgCell(cell, extra){
+  const color = COLORS[cell.color];
+  const isTriangle = cell.shape === 'triangle';
+  const ty = isTriangle ? 76 : 63;
+  const fs = isTriangle ? 30 : 42;
+
+  return '<div class="cell ' + (extra || '') + '">' +
+    '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+      '<g fill="' + color.fill + '">' + SHAPES[cell.shape] + '</g>' +
+      '<text x="50" y="' + ty + '" text-anchor="middle" font-size="' + fs +
+        '" font-weight="700" fill="' + color.ink + '" font-family="Segoe UI, Tahoma, sans-serif">' +
+        esc(cell.ch) +
+      '</text>' +
+    '</svg>' +
+  '</div>';
+}
+
+function gridHtml(q, side, opts){
+  const cells = q[side];
+  const reveal = opts && opts.reveal;
+  const good = opts && opts.good;
+  const mini = opts && opts.mini;
+
+  let html = '<div class="grid' + (mini ? ' mini' : '') + '" style="grid-template-columns:repeat(' + q.cols + ',1fr)">';
+
+  cells.forEach((cell, i) => {
+    const hit = reveal && q.spots.indexOf(i) !== -1;
+    html += svgCell(cell, hit ? 'hit' + (good ? ' good' : '') : '');
+  });
+
+  return html + '</div>';
+}
+
+/* ============================================================
+   الحالة والتنقل
+   ============================================================ */
+
+/* الأرقام تُعرض دائمًا بالصيغة الإنجليزية (0-9) */
+function num(n){ return String(n); }
+
+const state = {
+  items: [],
+  timed: true,
+  idx: 0,
+  attempts: 0,
+  locked: false,
+  log: [],
+  timerId: null,
+  remaining: 0
+};
+
+const $ = (s) => document.querySelector(s);
+
+function showScreen(name){
+  ['home', 'quiz', 'result'].forEach(k => {
+    $('#screen-' + k).classList.toggle('hidden', k !== name);
+  });
+  window.scrollTo(0, 0);
+}
+
+function readBest(){
+  try{ return parseInt(localStorage.getItem('detectify_best') || '0', 10) || 0; }
+  catch(e){ return 0; }
+}
+
+function writeBest(score){
+  try{
+    if(score > readBest()) localStorage.setItem('detectify_best', String(score));
+  }catch(e){}
+}
+
+function renderHome(){
+  const b = readBest();
+  $('#best').textContent = b > 0
+    ? ('أفضل نتيجة: ' + num(b) + ' من ' + num(PER_SECTION))
+    : 'لم تجرّب بعد';
+}
+
+function startSection(){
+  state.items = buildSet();
+  state.timed = $('#timer-toggle').checked;
+  state.idx = 0;
+  state.attempts = 0;
+  state.locked = false;
+  state.log = new Array(state.items.length).fill(null);
+
+  $('#timer').classList.toggle('hidden', !state.timed);
+  showScreen('quiz');
+  renderQuestion();
+  if(state.timed) startTimer(5 * 60);
+}
+
+function startTimer(sec){
+  clearInterval(state.timerId);
+  state.remaining = sec;
+  paintTimer();
+  state.timerId = setInterval(() => {
+    state.remaining--;
+    paintTimer();
+    if(state.remaining <= 0){
+      clearInterval(state.timerId);
+      state.timerId = null;
+      finish(true);
+    }
+  }, 1000);
+}
+
+function paintTimer(){
+  const el = $('#timer');
+  if(!state.timed){ el.textContent = ''; return; }
+  const m = Math.max(0, Math.floor(state.remaining / 60));
+  const s = Math.max(0, state.remaining % 60);
+  el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  el.classList.toggle('low', state.remaining <= 30);
+}
+
+function renderQuestion(){
+  const i = state.idx;
+  const q = state.items[i];
+
+  $('#counter').textContent = 'السؤال ' + num(i + 1) + ' من ' + num(state.items.length);
+  $('#bar').style.width = ((i / state.items.length) * 100) + '%';
+
+  $('#feedback').className = 'feedback hidden';
+  $('#feedback').innerHTML = '';
+  $('#next').classList.add('hidden');
+
+  state.attempts = 0;
+  state.locked = false;
+
+  let keys = '';
+  for(let n = 0; n <= 9; n++){
+    keys += '<button class="key" data-key="' + n + '">' + num(n) + '</button>';
+  }
+
+  $('#q-area').innerHTML =
+    '<p class="prompt">كم عدد الاختلافات بين الشبكتين؟</p>' +
+    '<div class="board">' +
+      '<div class="grid-wrap">' +
+        '<div class="grid-label">الشبكة اليسرى</div>' +
+        gridHtml(q, 'left', {}) +
+      '</div>' +
+      '<div class="grid-wrap">' +
+        '<div class="grid-label">الشبكة اليمنى</div>' +
+        gridHtml(q, 'right', {}) +
+      '</div>' +
+    '</div>' +
+    '<div class="numpad" id="numpad">' + keys + '</div>';
+
+  document.querySelectorAll('.key').forEach(k => {
+    k.addEventListener('click', () => pickNumber(+k.dataset.key, k));
+  });
+}
+
+function pickNumber(n, btn){
+  if(state.locked) return;
+
+  const q = state.items[state.idx];
+
+  if(n === q.answer) return answerCorrect(q, btn);
+
+  state.attempts++;
+
+  btn.classList.add('wrong');
+  setTimeout(() => btn.classList.remove('wrong'), 650);
+
+  $('#feedback').className = 'feedback bad';
+  $('#feedback').innerHTML = 'ليس صحيحًا. <b>امسح الشبكتين خلية بخلية وقارن المحتوى والشكل واللون.</b>';
+
+  if(state.attempts >= 3) revealAnswer(q);
+}
+
+function answerCorrect(q, btn){
+  state.locked = true;
+  state.log[state.idx] = {ok: true, firstTry: state.attempts === 0};
+
+  btn.classList.add('correct');
+  highlight(q, true);
+
+  $('#feedback').className = 'feedback ok';
+  $('#feedback').innerHTML = '<b>صحيح.</b> ' +
+    (q.answer === 0 ? 'لا توجد اختلافات بين الشبكتين.' : 'عدد الاختلافات ' + num(q.answer) + '.');
+
+  $('#next').classList.remove('hidden');
+}
+
+function revealAnswer(q){
+  state.locked = true;
+  state.log[state.idx] = {ok: false, firstTry: false, revealed: true};
+
+  highlight(q, false);
+
+  $('#feedback').className = 'feedback bad';
+  $('#feedback').innerHTML = '<b>الإجابة الصحيحة: ' + num(q.answer) + '</b> — مواضع الاختلافات محددة باللون الأحمر.';
+  $('#feedback').innerHTML += '<div style="margin-top:6px;font-size:13px;color:#6b4a46">' + describeSpots(q) + '</div>';
+
+  $('#next').classList.remove('hidden');
+}
+
+function describeSpots(q){
+  if(!q.spots.length) return 'لا توجد اختلافات.';
+  const rows = [];
+  const perRow = q.cols;
+  q.spots.forEach(i => {
+    const r = Math.floor(i / perRow) + 1;
+    const c = (i % perRow) + 1;
+    rows.push('صف ' + r + '، عمود ' + c);
+  });
+  return 'المواضع: ' + rows.join(' · ');
+}
+
+function highlight(q, good){
+  const wraps = document.querySelectorAll('#q-area .grid-wrap');
+  if(wraps.length < 2) return;
+
+  [0, 1].forEach(w => {
+    const cells = wraps[w].querySelectorAll('.cell');
+    q.spots.forEach(i => {
+      if(cells[i]) cells[i].classList.add('hit', good ? 'good' : 'no');
+    });
+  });
+}
+
+function nextQuestion(){
+  state.idx++;
+  if(state.idx >= state.items.length) return finish(false);
+  renderQuestion();
+}
+
+function finish(timeUp){
+  clearInterval(state.timerId);
+  state.timerId = null;
+
+  const total = state.items.length;
+  const score = state.log.filter(e => e && e.firstTry).length;
+
+  writeBest(score);
+
+  $('#ring').style.setProperty('--p', Math.round((score / total) * 100));
+  $('#score-num').textContent = num(score);
+
+  let title, sub;
+  if(timeUp){
+    title = 'انتهى الوقت';
+    sub = 'توقّف المؤقت. راجع الأسئلة أدناه، ثم أعد المحاولة بدون مؤقت إن أردت التركيز على الدقة.';
+  }else if(score >= 18){
+    title = 'ممتاز';
+    sub = 'دقة عالية في الملاحظة: ' + num(score) + ' من ' + num(total) + ' من المحاولة الأولى.';
+  }else if(score >= 14){
+    title = 'جيد جدًا';
+    sub = 'نتيجة جيدة. راجع الاختلافات التي فاتتك، وكرّر التمرين مع الوقت لتحسين السرعة.';
+  }else if(score >= 10){
+    title = 'مقبول';
+    sub = 'التقطت معظم الاختلافات. جرّب بدون مؤقت أولًا، وامسح الشبكة صفًا صفًا.';
+  }else{
+    title = 'يحتاج تدريبًا أكثر';
+    sub = 'ابدأ بدون مؤقت، وقارن الخلية نفسها في الشبكتين: المحتوى أولًا، ثم الشكل، ثم اللون.';
+  }
+
+  $('#result-title').textContent = title + ' — ' + num(score) + '/' + num(total);
+  $('#result-sub').textContent = sub;
+
+  renderReview();
+  showScreen('result');
+}
+
+function renderReview(){
+  const list = $('#review');
+  list.innerHTML = '';
+
+  state.items.forEach((q, i) => {
+    const entry = state.log[i];
+    let mark;
+
+    if(!entry) mark = '<span class="mark skip">لم يُجب</span>';
+    else if(entry.firstTry) mark = '<span class="mark ok">صحيح</span>';
+    else if(entry.ok) mark = '<span class="mark skip">بعد محاولة</span>';
+    else mark = '<span class="mark no">خطأ</span>';
+
+    const li = document.createElement('li');
+    li.innerHTML =
+      '<span class="no">' + num(i + 1) + '</span>' +
+      '<div class="q">' +
+        '<strong>الاختلافات: ' + num(q.answer) + '</strong>' +
+        '<div class="board" style="gap:10px">' +
+          '<div class="grid-wrap" style="padding:6px">' + gridHtml(q, 'left', {reveal: true}) + '</div>' +
+          '<div class="grid-wrap" style="padding:6px">' + gridHtml(q, 'right', {reveal: true}) + '</div>' +
+        '</div>' +
+      '</div>' +
+      mark;
+
+    list.appendChild(li);
+  });
+}
+
+/* ============================================================
+   الأحداث
+   ============================================================ */
+
+$('#start').addEventListener('click', startSection);
+$('#again').addEventListener('click', startSection);
+$('#next').addEventListener('click', nextQuestion);
+
+$('#home').addEventListener('click', () => {
+  renderHome();
+  showScreen('home');
+});
+
+$('#quit').addEventListener('click', () => {
+  clearInterval(state.timerId);
+  state.timerId = null;
+  renderHome();
+  showScreen('home');
+});
+
+document.addEventListener('keydown', (e) => {
+  if($('#screen-quiz').classList.contains('hidden')) return;
+
+  if(e.key === 'Enter' && !$('#next').classList.contains('hidden')){
+    nextQuestion();
+    return;
+  }
+
+  if(!state.locked && /^[0-9]$/.test(e.key)){
+    const btn = document.querySelector('.key[data-key="' + e.key + '"]');
+    if(btn) pickNumber(+e.key, btn);
+  }
+});
+
+renderHome();
+</script>
+</body>
+</html>
